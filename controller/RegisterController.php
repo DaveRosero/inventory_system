@@ -14,30 +14,40 @@ class RegisterController
             $user = $_POST['user'] ?? '';
             $pw = $_POST['pw'] ?? '';
             $pw2 = $_POST['pw2'] ?? '';
-            $json = [];
+            $errors = [];
 
             if (empty($user) || empty($pw) || empty($pw2)) {
-                http_response_code(400);
-                $json['error'] = 'All fields are required.';
-                echo $json['error'];
-                exit();
+                $errors[] = 'All fields are required.';
+            }
+
+            if ($this->model->userTaken($user)) {
+                $errors[] = 'Username is already taken.';
             }
 
             if ($pw !== $pw2) {
-                http_response_code(400);
-                $json['error'] = 'Passwords does not match.';
-                echo $json['error'];
-                exit();
+                $errors[] = 'Passwords does not match.';
             }
 
             if (strlen($pw) < 8) {
-                http_response_code(400);
-                $json['error'] = 'Password must be at least 8 charaters long.';
-                echo $json['error'];
-                exit();
+                $errors[] = 'Password must be at least 8 charaters long.';
             }
 
-            $this->model->register($user, $pw);
+            if (!empty($errors)) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'errors' => $errors
+                ]);
+                return;
+            }
+
+            $id = $this->model->register($user, $pw);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => 'New user registered with ID: ' . $id
+            ]);
+            return;
         } else {
             $this->methodNotAllowed();
         }
@@ -45,7 +55,10 @@ class RegisterController
     public function methodNotAllowed()
     {
         http_response_code(405);
-        echo 'Method Not Allowed';
+        header('Content-Type: application/json');
+        echo json_encode([
+            'message' => 'Method Not Allowed'
+        ]);
         exit();
     }
 }

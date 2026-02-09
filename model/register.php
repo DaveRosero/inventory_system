@@ -11,26 +11,20 @@ class Register
 
   public function register($user, $pw)
   {
-    $json = [];
-    if ($this->isUserTaken($user)) {
-      $json['error'] = 'Username is already taken.';
-      echo $json['error'];
-      exit();
-    }
     $pw = password_hash($pw, PASSWORD_DEFAULT);
-    $stmt = $this->conn->prepare("INSERT INTO user (user, pw) VALUES (:user,:pw)");
+    $stmt = $this->conn->prepare("INSERT INTO users (user, pw) VALUES (:user,:pw)");
     $stmt->execute([
       'user' => $user,
       'pw' => $pw
     ]);
-    echo "New user registered with ID: " . $this->conn->lastInsertId();
+    return $this->conn->lastInsertId();
   }
 
-  public function isUserTaken($user)
+  public function userTaken($user)
   {
-    $stmt = $this->conn->prepare("SELECT 1 FROM user WHERE user = :user");
+    $stmt = $this->conn->prepare("SELECT 1 FROM users WHERE user = :user LIMIT 1");
     $stmt->execute(['user' => $user]);
-    return $stmt->fetch() !== false;
+    return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
   }
 }
 ?>

@@ -51,7 +51,7 @@ class RegisterController
                     'success' => true,
                     'message' => 'New user registered with ID: ' . $id
                 ]);
-                break;
+                return;
             case 'PUT':
                 break;
             case 'PATCH':

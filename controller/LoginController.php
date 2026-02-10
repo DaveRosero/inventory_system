@@ -106,7 +106,6 @@ class LoginController
                     ]);
                     return;
                 }
-                break;
             case 'DELETE':
                 break;
             default:

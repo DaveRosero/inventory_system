@@ -1,0 +1,45 @@
+<?php
+require_once '';
+
+class Controller
+{
+    private $model;
+    public function __construct()
+    {
+        $this->model = new ();
+    }
+    public function handleRequest()
+    {
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'GET':
+                break;
+            case 'POST':
+                break;
+            case 'PUT':
+                break;
+            case 'PATCH':
+                break;
+            case 'DELETE':
+                break;
+            default:
+                $this->methodNotAllowed();
+                break;
+        }
+    }
+    public function methodNotAllowed()
+    {
+        http_response_code(405);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'message' => 'Method Not Allowed'
+        ]);
+        exit();
+    }
+}
+
+$controller = new Controller();
+$controller->handleRequest();
+?>

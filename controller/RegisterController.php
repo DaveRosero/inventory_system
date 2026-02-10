@@ -10,46 +10,57 @@ class RegisterController
     }
     public function handleRequest()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $user = $_POST['user'] ?? '';
-            $pw = $_POST['pw'] ?? '';
-            $pw2 = $_POST['pw2'] ?? '';
-            $errors = [];
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents('php://input'), true);
 
-            if (empty($user) || empty($pw) || empty($pw2)) {
-                $errors[] = 'All fields are required.';
-            }
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'GET':
+                break;
+            case 'POST':
+                $user = $data['user'] ?? '';
+                $pw = $data['pw'] ?? '';
+                $pw2 = $data['pw2'] ?? '';
+                $errors = [];
 
-            if ($this->model->userTaken($user)) {
-                $errors[] = 'Username is already taken.';
-            }
+                if (empty($user) || empty($pw) || empty($pw2)) {
+                    $errors[] = 'All fields are required.';
+                }
 
-            if ($pw !== $pw2) {
-                $errors[] = 'Passwords does not match.';
-            }
+                if ($this->model->userTaken($user)) {
+                    $errors[] = 'Username is already taken.';
+                }
 
-            if (strlen($pw) < 8) {
-                $errors[] = 'Password must be at least 8 charaters long.';
-            }
+                if ($pw !== $pw2) {
+                    $errors[] = 'Passwords does not match.';
+                }
 
-            if (!empty($errors)) {
-                header('Content-Type: application/json');
+                if (strlen($pw) < 8) {
+                    $errors[] = 'Password must be at least 8 charaters long.';
+                }
+
+                if (!empty($errors)) {
+                    echo json_encode([
+                        'success' => false,
+                        'errors' => $errors
+                    ]);
+                    return;
+                }
+
+                $id = $this->model->register($user, $pw);
                 echo json_encode([
-                    'success' => false,
-                    'errors' => $errors
+                    'success' => true,
+                    'message' => 'New user registered with ID: ' . $id
                 ]);
                 return;
-            }
-
-            $id = $this->model->register($user, $pw);
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'message' => 'New user registered with ID: ' . $id
-            ]);
-            return;
-        } else {
-            $this->methodNotAllowed();
+            case 'PUT':
+                break;
+            case 'PATCH':
+                break;
+            case 'DELETE':
+                break;
+            default:
+                $this->methodNotAllowed();
+                break;
         }
     }
     public function methodNotAllowed()

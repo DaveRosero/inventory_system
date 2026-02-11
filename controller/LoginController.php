@@ -3,10 +3,10 @@ require_once '../model/login.php';
 
 class LoginController
 {
-    private $model;
+    private $login;
     public function __construct()
     {
-        $this->model = new Login();
+        $this->login = new Login();
     }
     public function handleRequest()
     {
@@ -28,7 +28,7 @@ class LoginController
                     return;
                 }
 
-                if (!$this->model->userExists($user)) {
+                if (!$this->login->userExists($user)) {
                     echo json_encode([
                         'success' => false,
                         'message' => 'Invalid username or password.'
@@ -36,7 +36,7 @@ class LoginController
                     return;
                 }
 
-                $user = $this->model->login($user, $pw);
+                $user = $this->login->login($user, $pw);
 
                 if ($user === false) {
                     echo json_encode([
@@ -85,8 +85,8 @@ class LoginController
                     return;
                 }
 
-                if ($this->model->userExists($user) && $this->model->login($user, $old_pw) !== false) {
-                    if ($this->model->updatePassword($user, $new_pw)) {
+                if ($this->login->userExists($user) && $this->login->login($user, $old_pw) !== false) {
+                    if ($this->login->updatePassword($user, $new_pw)) {
                         echo json_encode([
                             'success' => true,
                             'message' => 'Password has been changed.'

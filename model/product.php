@@ -30,9 +30,50 @@ class Product
         return $id;
     }
 
-    public function productExists ($product) {
-        $stmt = $this->conn->prepare("SELECT product FROM products WHERE product = :product LIMIT 1");
+    public function existsByName ($product) {
+        $stmt = $this->conn->prepare("SELECT 1 FROM products WHERE product = :product LIMIT 1");
         $stmt->execute(['product' => $product]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function existsByID ($id) {
+        $stmt = $this->conn->prepare("SELECT 1 FROM products WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function updateProductPartial ($id, $product = null, $description = null, $stock = null) { // Optional params for the product patch function. Product ID sent via json is required.
+        $queries = [];
+
+        if ($product !== null) {
+            $queries['product'] = $this->conn->prepare("UPDATE products SET product = :product WHERE id = :id");
+        }
+        if ($description !== null) {
+            $queries['description'] = $this->conn->prepare("UPDATE products SET description = :description WHERE id = :id");
+        }
+        if ($stock !== null) {
+            $queries['stock'] = $this->conn->prepare("UPDATE products SET stock = :stock WHERE id = :id");
+        }
+
+        foreach ($queries as $key => $stmt) {
+            switch ($key) {
+                case 'product':
+                    $stmt->execute(['product' => $product, 'id' => $id]);
+                    break;
+                case 'description':
+                    $stmt->execute(['description' => $description, 'id' => $id]);
+                    break;
+                case 'stock':
+                    $stmt->execute(['stock' => $stock, 'id' => $id]);
+                    break;
+            }
+        }
+        return $id;
+    }
+
+    public function deleteProduct ($id) {
+        $stmt = $this->conn->prepare("DELETE FROM products WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $id;
     }
 }

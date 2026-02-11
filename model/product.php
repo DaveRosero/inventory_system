@@ -70,4 +70,10 @@ class Product
         }
         return $id;
     }
+
+    public function deleteProduct ($id) {
+        $stmt = $this->conn->prepare("DELETE FROM products WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $id;
+    }
 }

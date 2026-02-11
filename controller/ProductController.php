@@ -108,7 +108,29 @@ class ProductController
                 ]);
                 return;
             case 'DELETE':
-                break;
+                $id = $data['id'] ?? null; // This is a hidden data type when user submits the form and should dynamically change to match the product that the user wants to update
+                if ($id === null) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Product ID is required.' // Product ID is expected to be sent in json via AJAX. This message is for developers only.
+                    ]);
+                    return;
+                }
+
+                if (!$this->product->existsByID($id)) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Product does not exist.' // Additional check to verify that the product ID exists in the database. This message is for developers only.
+                    ]);
+                    return;
+                }
+
+                $deleted_id = $this->product->deleteProduct($data['id']);
+                echo json_encode([
+                    'success' => true,
+                    'Message' => 'Deleted product with ID: ' . $deleted_id
+                ]);
+                return;
             default:
                 $this->methodNotAllowed();
                 break;

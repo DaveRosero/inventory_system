@@ -3,10 +3,10 @@ require_once '../model/register.php';
 
 class RegisterController
 {
-    private $model;
+    private $register;
     public function __construct()
     {
-        $this->model = new Register();
+        $this->register = new Register();
     }
     public function handleRequest()
     {
@@ -26,7 +26,7 @@ class RegisterController
                     $errors[] = 'All fields are required.';
                 }
 
-                if ($this->model->userTaken($user)) {
+                if ($this->register->userTaken($user)) {
                     $errors[] = 'Username is already taken.';
                 }
 
@@ -46,7 +46,7 @@ class RegisterController
                     return;
                 }
 
-                $id = $this->model->register($user, $pw);
+                $id = $this->register->register($user, $pw);
                 echo json_encode([
                     'success' => true,
                     'message' => 'New user registered with ID: ' . $id

@@ -9,11 +9,6 @@ class Login
         $this->conn = database();
     }
 
-**//
-string $user
-string $pw
-return $user username
-**
     public function login($user, $pw)
     {
         $stmt = $this->conn->prepare("SELECT pw FROM users WHERE user = :user LIMIT 1");
@@ -26,10 +21,7 @@ return $user username
 
         return $user;
     }
-**//
-string $user
-returns bool
-*
+
     public function userExists($user)
     {
         $stmt = $this->conn->prepare("SELECT user FROM users WHERE user = :user LIMIT 1");
@@ -37,11 +29,6 @@ returns bool
         return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
     }
 
-**//
-string $user
-string $new_pw new password hashed
-return bool
-*
     public function updatePassword ($user, $new_pw) {
         $old_pw = $this->getUserPassword($user);
         if (password_verify($new_pw, $old_pw['pw'])){
@@ -55,10 +42,7 @@ return bool
         ]);
         return true;
     }
-**//
-string $user
-return $stmt array
-*
+
     public function getUserPassword ($user) {
         $stmt = $this->conn->prepare('SELECT pw FROM users WHERE user = :user LIMIT 1');
         $stmt->execute(['user' => $user]);

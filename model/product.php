@@ -9,12 +9,6 @@ class Product
         $this->conn = database();
     }
 
-**//
-string $product
-string $description
-int $stock
-return $id int
-//**
     public function createProduct ($product, $description, $stock) {
         $stmt = $this->conn->prepare('INSERT INTO products (product, description, stock) VALUES (:product, :description, :stock)');
         $stmt->execute([
@@ -24,13 +18,7 @@ return $id int
         ]);
         return $this->conn->lastInsertId();
     }
-**//
-int $id
-string $product optional
-string $description optional
-int $stock optional
-return $id int
-**//
+
     public function updateProduct ($id, $product, $description, $stock) {
         $stmt = $this->conn->prepare("UPDATE products SET product = :product, description = :description, stock = :stock WHERE id = :id");
         $stmt->execute([
@@ -41,10 +29,7 @@ return $id int
         ]);
         return $id;
     }
-**//
-string $product
-return bool
-**//
+
     public function existsByName ($product) {
         $stmt = $this->conn->prepare("SELECT 1 FROM products WHERE product = :product LIMIT 1");
         $stmt->execute(['product' => $product]);
